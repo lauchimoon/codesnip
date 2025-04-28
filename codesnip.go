@@ -14,13 +14,12 @@ import (
 
     "github.com/golang/freetype"
     "github.com/golang/freetype/truetype"
-    //"golang.org/x/image/font"
 )
 
 const (
     FONT_PATH = "/usr/share/fonts/JetBrainsMono-Regular.ttf"
     DPI = 120.0
-    PROGRAM_NAME = "codeshot"
+    PROGRAM_NAME = "codesnip"
 )
 
 type File struct {
