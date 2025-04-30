@@ -20,7 +20,7 @@ const (
     FONT_PATH = "./resources/fonts/SourceCodePro-Regular.ttf"
     DPI = 120.0
     PROGRAM_NAME = "codesnip"
-	OUTPUT_FILE = "snippet.png"
+    OUTPUT_FILE = "snippet.png"
 )
 
 type File struct {
@@ -40,7 +40,7 @@ type Canvas struct {
 func main() {
     if len(os.Args) < 2 {
         fmt.Printf("usage: %s <file> [num1-num2]\n", PROGRAM_NAME)
-		fmt.Println("  if no range is given, screenshot the whole file")
+        fmt.Println("  if no range is given, screenshot the whole file")
         return
     }
 
@@ -50,16 +50,16 @@ func main() {
         panic(err)
     }
 
-	num1, num2 := 0, 0
-	if len(os.Args) == 3 {
-		num1, num2 = SplitRange(os.Args[2])
-		if !ValidRange(num1, num2, file) {
-			fmt.Printf("error: range must be between 1 and %d\n", file.NumLines)
-		}
-	} else {
-		num1 = 1
-		num2 = file.NumLines
-	}
+    num1, num2 := 0, 0
+    if len(os.Args) == 3 {
+        num1, num2 = SplitRange(os.Args[2])
+        if !ValidRange(num1, num2, file) {
+            fmt.Printf("error: range must be between 1 and %d\n", file.NumLines)
+        }
+    } else {
+        num1 = 1
+        num2 = file.NumLines
+    }
 
     snippet := file.Content[num1-1:num2]
     longestLine := GetLongestLine(snippet)
@@ -108,8 +108,8 @@ func ReadFile(path string) (File, error) {
     file.Path = path
     scanner := bufio.NewScanner(handle)
     for scanner.Scan() {
-		text := scanner.Text()
-		text = strings.ReplaceAll(text, "\t", "    ")
+        text := scanner.Text()
+        text = strings.ReplaceAll(text, "\t", "    ")
         file.Content = append(file.Content, text)
     }
 
@@ -172,7 +172,7 @@ func (canvas Canvas) Export() {
         panic(err)
     }
 
-	img := canvas.Handle.SubImage(canvas.Handle.Bounds())
+    img := canvas.Handle.SubImage(canvas.Handle.Bounds())
     png.Encode(outFile, img)
 }
 
