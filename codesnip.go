@@ -37,8 +37,9 @@ type Canvas struct {
 }
 
 func main() {
-    if len(os.Args) < 3 {
-        fmt.Printf("usage: %s <file> <num1-num2>\n", PROGRAM_NAME)
+    if len(os.Args) < 2 {
+        fmt.Printf("usage: %s <file> [num1-num2]\n", PROGRAM_NAME)
+		fmt.Println("  if no range is given, screenshot the whole file")
         return
     }
 
@@ -48,10 +49,16 @@ func main() {
         panic(err)
     }
 
-    num1, num2 := SplitRange(os.Args[2])
-    if !ValidRange(num1, num2, file) {
-        fmt.Printf("error: range must be between 1 and %d\n", file.NumLines)
-    }
+	num1, num2 := 0, 0
+	if len(os.Args) == 3 {
+		num1, num2 = SplitRange(os.Args[2])
+		if !ValidRange(num1, num2, file) {
+			fmt.Printf("error: range must be between 1 and %d\n", file.NumLines)
+		}
+	} else {
+		num1 = 1
+		num2 = file.NumLines
+	}
 
     snippet := file.Content[num1-1:num2]
     longestLine := GetLongestLine(snippet)
