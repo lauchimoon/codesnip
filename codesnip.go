@@ -107,7 +107,9 @@ func ReadFile(path string) (File, error) {
     file.Path = path
     scanner := bufio.NewScanner(handle)
     for scanner.Scan() {
-        file.Content = append(file.Content, scanner.Text())
+		text := scanner.Text()
+		text = strings.ReplaceAll(text, "\t", "    ")
+        file.Content = append(file.Content, text)
     }
 
     file.NumLines = len(file.Content)
