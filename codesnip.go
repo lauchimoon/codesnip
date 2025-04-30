@@ -20,6 +20,7 @@ const (
     FONT_PATH = "./resources/fonts/SourceCodePro-Regular.ttf"
     DPI = 120.0
     PROGRAM_NAME = "codesnip"
+	OUTPUT_FILE = "snippet.png"
 )
 
 type File struct {
@@ -166,7 +167,7 @@ func (canvas Canvas) DrawText(text string, x, y int) {
 }
 
 func (canvas Canvas) Export() {
-    outFile, err := os.Create("code.png")
+    outFile, err := os.Create(OUTPUT_FILE)
     if err != nil {
         panic(err)
     }
