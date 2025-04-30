@@ -50,7 +50,7 @@ func main() {
 
     num1, num2 := SplitRange(os.Args[2])
     if !ValidRange(num1, num2, file) {
-        fmt.Printf("error: range must be between 1 and %d\n", PROGRAM_NAME, file.NumLines)
+        fmt.Printf("error: range must be between 1 and %d\n", file.NumLines)
     }
 
     snippet := file.Content[num1-1:num2]
@@ -82,8 +82,7 @@ func SplitRange(s string) (int, int) {
 }
 
 func ValidRange(num1, num2 int, f File) bool {
-    return num1 < num2 &&
-         1 <= num1 &&
+    return 1 <= num1 &&
          num1 <= f.NumLines &&
          1 <= num2 &&
          num2 <= f.NumLines
