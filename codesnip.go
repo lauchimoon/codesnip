@@ -17,7 +17,7 @@ import (
 )
 
 const (
-    FONT_PATH = "/usr/share/fonts/JetBrainsMono-Regular.ttf"
+    FONT_PATH = "./resources/fonts/SourceCodePro-Regular.ttf"
     DPI = 120.0
     PROGRAM_NAME = "codesnip"
 )
