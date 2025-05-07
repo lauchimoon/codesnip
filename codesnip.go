@@ -12,8 +12,11 @@ import (
     "image/draw"
     "image/png"
 
+    "golang.org/x/image/math/fixed"
     "github.com/golang/freetype"
     "github.com/golang/freetype/truetype"
+
+    "github.com/lauchimoon/codesnip/lexer"
 )
 
 const (
@@ -64,13 +67,29 @@ func main() {
     snippet := file.Content[num1-1:num2]
     longestLine := GetLongestLine(snippet)
 
+    lex := lexer.LexerNew(strings.Join(snippet, ""))
+    tokens := lex.Lex()
+
     canvas, err := CreateCanvas(24, longestLine, len(snippet))
     if err != nil {
         panic(err)
     }
 
-    for lineNum, text := range snippet {
-        canvas.DrawText(text, 5, 20 + lineNum*23)
+    lineNum := 0
+    textX := 5
+
+    for _, token := range tokens {
+        textY := 20 + lineNum*23
+        textColor := TextColorByToken(token.Kind)
+        canvas.DrawText(token.Text, textX, textY, textColor)
+
+        addedWidth := MeasureString(canvas.Font, canvas.FontSize, token.Text)
+        textX += addedWidth
+
+        if token.Kind == lexer.TOKEN_NEWLINE {
+            textX = 5
+            lineNum += 1
+        }
     }
     canvas.Export()
 }
@@ -110,6 +129,7 @@ func ReadFile(path string) (File, error) {
     for scanner.Scan() {
         text := scanner.Text()
         text = strings.ReplaceAll(text, "\t", "    ")
+        text += "\n"
         file.Content = append(file.Content, text)
     }
 
@@ -141,7 +161,6 @@ func CreateCanvas(fontSize int, longestLine string, numLines int) (Canvas, error
 
     canvas.Handle = image.NewRGBA(canvas.Bounds)
     backgroundColor := color.RGBA{ 60, 60, 60, 255 }
-    textColor := image.White
     draw.Draw(canvas.Handle, canvas.Handle.Bounds(), &image.Uniform{backgroundColor},
             image.Point{0, 0}, draw.Src)
 
@@ -149,6 +168,7 @@ func CreateCanvas(fontSize int, longestLine string, numLines int) (Canvas, error
     if err != nil {
         return Canvas{}, err
     }
+
     canvas.Font = font
 
     canvas.FreetypeContext = freetype.NewContext()
@@ -156,13 +176,40 @@ func CreateCanvas(fontSize int, longestLine string, numLines int) (Canvas, error
     canvas.FreetypeContext.SetFont(font)
     canvas.FreetypeContext.SetClip(canvas.Bounds)
     canvas.FreetypeContext.SetDst(canvas.Handle)
-    canvas.FreetypeContext.SetSrc(textColor)
 
     return canvas, nil
 }
 
-func (canvas Canvas) DrawText(text string, x, y int) {
+func TextColorByToken(tokenKind lexer.TokenKind) color.RGBA {
+    switch (tokenKind) {
+        case lexer.TOKEN_KEYWORD: return color.RGBA{ 255, 203, 0, 255 }
+        case lexer.TOKEN_NUMBER: return color.RGBA{ 255, 105, 105, 255 }
+        case lexer.TOKEN_STRING, lexer.TOKEN_CHAR: return color.RGBA{ 132, 255, 105, 255 }
+        case lexer.TOKEN_PREPROC: return color.RGBA{ 144, 178, 255, 255 }
+        case lexer.TOKEN_COMMENT: return color.RGBA{ 211, 176, 131, 255 }
+        default: return color.RGBA{ 255, 255, 255, 255 }
+    }
+}
+
+func MeasureString(font *truetype.Font, fontSize int, text string) int {
+    width := 0
+
+    for _, c := range text {
+        index := font.Index(c)
+        hmetric := font.HMetric(fixed.Int26_6(fontSize - 4), index)
+        width += int(hmetric.AdvanceWidth)
+    }
+
+    return width
+}
+
+func (canvas Canvas) DrawText(text string, x, y int, clr color.RGBA) {
+    canvas.FreetypeContext.SetSrc(&image.Uniform{clr})
     pt := freetype.Pt(x, y)
+
+    if strings.Contains(text, "\n") {
+        text = strings.ReplaceAll(text, "\n", "")
+    }
     canvas.FreetypeContext.DrawString(text, pt)
 }
 
