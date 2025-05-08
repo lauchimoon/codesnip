@@ -3,7 +3,7 @@ Take screenshots of your code
 
 ## Usage
 ```
-$ go build .
+$ go build -o codesnip .
 $ ./codesnip <file> [num1-num2]
 ```
 num1-num2 defines the range of lines to take a screenshot of.
