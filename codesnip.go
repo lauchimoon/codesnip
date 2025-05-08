@@ -17,10 +17,10 @@ import (
     "github.com/golang/freetype/truetype"
 
     "github.com/lauchimoon/codesnip/lexer"
+    font "github.com/lauchimoon/codesnip/resources/fonts"
 )
 
 const (
-    FONT_PATH = "./resources/fonts/SourceCodePro-Regular.ttf"
     DPI = 120.0
     PROGRAM_NAME = "codesnip"
     OUTPUT_FILE = "snippet.png"
@@ -164,7 +164,7 @@ func CreateCanvas(fontSize int, longestLine string, numLines int) (Canvas, error
     draw.Draw(canvas.Handle, canvas.Handle.Bounds(), &image.Uniform{backgroundColor},
             image.Point{0, 0}, draw.Src)
 
-    font, err := LoadFont(FONT_PATH)
+    font, err := LoadFont()
     if err != nil {
         return Canvas{}, err
     }
@@ -223,16 +223,11 @@ func (canvas Canvas) Export() {
     png.Encode(outFile, img)
 }
 
-func LoadFont(path string) (*truetype.Font, error) {
-    fontBytes, err := os.ReadFile(path)
+func LoadFont() (*truetype.Font, error) {
+    fnt, err := freetype.ParseFont(font.SourceCodePro)
     if err != nil {
         return nil, err
     }
 
-    font, err := freetype.ParseFont(fontBytes)
-    if err != nil {
-        return nil, err
-    }
-
-    return font, nil
+    return fnt, nil
 }
