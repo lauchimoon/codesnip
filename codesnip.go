@@ -164,16 +164,16 @@ func CreateCanvas(fontSize int, longestLine string, numLines int) (Canvas, error
     draw.Draw(canvas.Handle, canvas.Handle.Bounds(), &image.Uniform{backgroundColor},
             image.Point{0, 0}, draw.Src)
 
-    font, err := LoadFont()
+    fnt, err := LoadFont()
     if err != nil {
         return Canvas{}, err
     }
 
-    canvas.Font = font
+    canvas.Font = fnt
 
     canvas.FreetypeContext = freetype.NewContext()
     canvas.FreetypeContext.SetDPI(DPI)
-    canvas.FreetypeContext.SetFont(font)
+    canvas.FreetypeContext.SetFont(fnt)
     canvas.FreetypeContext.SetClip(canvas.Bounds)
     canvas.FreetypeContext.SetDst(canvas.Handle)
 
@@ -191,12 +191,12 @@ func TextColorByToken(tokenKind lexer.TokenKind) color.RGBA {
     }
 }
 
-func MeasureString(font *truetype.Font, fontSize int, text string) int {
+func MeasureString(fnt *truetype.Font, fontSize int, text string) int {
     width := 0
 
     for _, c := range text {
-        index := font.Index(c)
-        hmetric := font.HMetric(fixed.Int26_6(fontSize - 4), index)
+        index := fnt.Index(c)
+        hmetric := fnt.HMetric(fixed.Int26_6(fontSize - 4), index)
         width += int(hmetric.AdvanceWidth)
     }
 
