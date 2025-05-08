@@ -215,7 +215,7 @@ func isNumber(s string) bool {
 }
 
 func isPunct(c rune) bool {
-    return c == ',' || c == '.' || c == '?' || c == ':'
+    return c == ',' || c == '.' || c == '?' || c == ':' || c == '!'
 }
 
 func isOperator(c rune) bool {
